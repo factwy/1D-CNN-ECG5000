@@ -1,15 +1,11 @@
 import torch.nn as nn
 
-from .base_cnn import BaseCNN
+from .basecnn import BaseCNN
 from .vgg import VGG
-from .inception import InceptionNet
-from .dilated_cnn import DilatedCNN
 
 MODEL_REGISTRY: dict[str, type[nn.Module]] = {
-    #"base-cnn":    BaseCNN,
-    #"vgg":         VGG,
-    #"inception":   InceptionNet,
-    #"dilated-cnn": DilatedCNN,
+    "base-cnn":    BaseCNN,
+    "vgg":         VGG,
 }
 
 
