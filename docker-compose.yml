@@ -1,0 +1,44 @@
+services:
+
+  # ── 학습 워크스페이스 ────────────────────────────────────────────────────────
+  # 띄우기  : docker compose up -d
+  # 접속    : docker compose exec train bash
+  # 학습 예  : python train.py --model vgg --amp
+  # 학습 예  : python train.py --model inception --epochs 100
+  train:
+    build: .
+    stdin_open: true   # docker exec -it 접속 시 필요
+    tty: true          # 터미널 유지
+    command: sleep infinity
+    volumes:
+      - ./data:/workspace/data       # ECG5000 캐시
+      - ./outputs:/workspace/outputs  # 체크포인트, 플롯
+    working_dir: /workspace
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # ── 추론 워크스페이스 ───────────────────────────────────────────────────────
+  # 띄우기  : docker compose up -d
+  # 접속    : docker compose exec inference bash
+  # 추론 예  : python inference.py --model vgg --model_path outputs/vgg_best.pth --data_path data/ECG5000_TEST.txt
+  inference:
+    build: .
+    stdin_open: true
+    tty: true
+    command: sleep infinity
+    volumes:
+      - ./data:/workspace/data
+      - ./outputs:/workspace/outputs
+    working_dir: /workspace
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

@@ -1,0 +1,27 @@
+# Git
+.git/
+.gitignore
+
+# Python 캐시
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Jupyter
+*.ipynb
+.ipynb_checkpoints/
+
+# 데이터 & 아웃풋 (볼륨으로 마운트)
+data/
+outputs/
+*.pth
+
+# 환경설정
+.env
+*.env.*
+
+# OS
+.DS_Store
+Thumbs.db
