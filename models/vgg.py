@@ -66,6 +66,7 @@ class VGG(nn.Module):
             nn.Flatten(),
             nn.Linear(512, 512),
             nn.ReLU(),
+            nn.Dropout(dropout),
             nn.Linear(512, 512),
             nn.ReLU(),
             nn.Dropout(dropout),
