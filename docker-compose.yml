@@ -11,7 +11,8 @@ services:
     tty: true          # 터미널 유지
     command: sleep infinity
     volumes:
-      - ./data:/workspace/data       # ECG5000 캐시
+      - .:/workspace                  # 소스 코드 (수정 즉시 반영)
+      - ./data/ECG5000:/data/ECG5000  # 로컬 데이터셋
       - ./outputs:/workspace/outputs  # 체크포인트, 플롯
     working_dir: /workspace
     deploy:
@@ -25,15 +26,16 @@ services:
   # ── 추론 워크스페이스 ───────────────────────────────────────────────────────
   # 띄우기  : docker compose up -d
   # 접속    : docker compose exec inference bash
-  # 추론 예  : python inference.py --model vgg --model_path outputs/vgg_best.pth --data_path data/ECG5000_TEST.txt
+  # 추론 예  : python inference.py --model vgg --model_path outputs/vgg_best.pth
   inference:
     build: .
     stdin_open: true
     tty: true
     command: sleep infinity
     volumes:
-      - ./data:/workspace/data
-      - ./outputs:/workspace/outputs
+      - .:/workspace                  # 소스 코드 (수정 즉시 반영)
+      - ./data/ECG5000:/data/ECG5000  # 로컬 데이터셋
+      - ./outputs:/workspace/outputs  # 체크포인트, 플롯
     working_dir: /workspace
     deploy:
       resources:

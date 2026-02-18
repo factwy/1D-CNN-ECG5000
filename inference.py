@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
+from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report
 
 from models import MODEL_REGISTRY, build_model
@@ -18,7 +19,8 @@ def parse_args():
                    required=True, choices=list(MODEL_REGISTRY),
                    help="학습 시 사용한 모델 이름")
     p.add_argument("--model_path",  required=True, help="학습된 .pth 파일 경로")
-    p.add_argument("--data_path",   required=True, help="입력 데이터 .txt 파일 경로")
+    p.add_argument("--data_path",   default="/data/ECG5000/ECG5000_TEST.txt",
+                   help="입력 데이터 .txt 파일 경로")
     p.add_argument("--num_classes", type=int,   default=5)
     p.add_argument("--dropout",     type=float, default=0.3)
     p.add_argument("--batch_size",  type=int,   default=64)
@@ -38,12 +40,7 @@ def main():
     # ── Data ──────────────────────────────────────────────────────────────────
     arr = pd.read_csv(args.data_path, header=None, sep=r"\s+").values.astype(np.float32)
     X   = arr[:, 1:]
-    y   = arr[:, 0].astype(int)
-
-    # 레이블 0-based 정규화
-    unique    = np.unique(y)
-    label_map = {v: i for i, v in enumerate(sorted(unique))}
-    y = np.array([label_map[v] for v in y])
+    y   = LabelEncoder().fit_transform(arr[:, 0].astype(int))
 
     loader = DataLoader(
         TimeSeriesDataset(X, y),

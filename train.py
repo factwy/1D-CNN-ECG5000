@@ -3,8 +3,6 @@
 
 import os
 import argparse
-import urllib.request
-import zipfile
 
 import matplotlib
 matplotlib.use("Agg")
@@ -30,7 +28,7 @@ def parse_args():
     p = argparse.ArgumentParser(description="ECG5000 1D-CNN 학습")
     p.add_argument("--model",
                    default="vgg", choices=list(MODEL_REGISTRY),)
-    p.add_argument("--data_dir",   default="./data",    help="데이터 저장 경로")
+    p.add_argument("--data_dir",   default="/data/ECG5000", help="ECG5000 데이터 디렉터리")
     p.add_argument("--output_dir", default="./outputs", help="모델/플롯 저장 경로")
     p.add_argument("--batch_size", type=int,   default=64)
     p.add_argument("--epochs",     type=int,   default=50)
@@ -47,29 +45,13 @@ def parse_args():
 
 # ── Data ──────────────────────────────────────────────────────────────────────
 
-def download_ecg5000(save_dir: str):
-    os.makedirs(save_dir, exist_ok=True)
-    train_path = os.path.join(save_dir, "ECG5000_TRAIN.txt")
-    test_path  = os.path.join(save_dir, "ECG5000_TEST.txt")
+def load_ecg5000(data_dir: str):
+    train_path = os.path.join(data_dir, "ECG5000_TRAIN.txt")
+    test_path  = os.path.join(data_dir, "ECG5000_TEST.txt")
 
-    if not (os.path.exists(train_path) and os.path.exists(test_path)):
-        print("Downloading ECG5000 ...")
-        url      = "https://www.timeseriesclassification.com/aeon-toolkit/ECG5000.zip"
-        zip_path = os.path.join(save_dir, "ECG5000.zip")
-        urllib.request.urlretrieve(url, zip_path)
-        with zipfile.ZipFile(zip_path, "r") as zf:
-            zf.extractall(save_dir)
-        for root, _, files in os.walk(save_dir):
-            for f in files:
-                src = os.path.join(root, f)
-                if "_TRAIN" in f and f.endswith(".txt"):
-                    os.replace(src, train_path)
-                elif "_TEST" in f and f.endswith(".txt"):
-                    os.replace(src, test_path)
-        os.remove(zip_path)
-        print("Download complete.")
-    else:
-        print("Using cached data.")
+    for p in (train_path, test_path):
+        if not os.path.exists(p):
+            raise FileNotFoundError(f"데이터 파일을 찾을 수 없습니다: {p}")
 
     def _load(path):
         arr = pd.read_csv(path, header=None, sep=r"\s+").values.astype(np.float32)
@@ -207,7 +189,7 @@ def main():
     print(f"torch.compile   : {args.compile}")
 
     # ── Data ──────────────────────────────────────────────────────────────────
-    X_train, y_train, X_test, y_test = download_ecg5000(args.data_dir)
+    X_train, y_train, X_test, y_test = load_ecg5000(args.data_dir)
     NUM_CLASSES = len(np.unique(y_train))
 
     print(f"X_train : {X_train.shape}  |  y_train : {y_train.shape}")
