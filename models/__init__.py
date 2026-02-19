@@ -3,11 +3,13 @@ import torch.nn as nn
 from .basecnn import BaseCNN
 from .vgg import VGG
 from .inception import Inception
+from .tcn import TCN
 
 MODEL_REGISTRY: dict[str, type[nn.Module]] = {
     "base-cnn":    BaseCNN,
     "vgg":         VGG,
     "inception":   Inception,
+    "tcn":         TCN,
 }
 
 
