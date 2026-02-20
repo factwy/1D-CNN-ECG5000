@@ -13,8 +13,9 @@ ECG5000 시계열 데이터셋을 기반으로 다양한 1D-CNN 모델을 학습
 5. [학습](#학습)
 6. [추론](#추론)
 7. [모델 요약](#모델-요약)
-8. [ONNX 변환 및 추론](#onnx-변환-및-추론)
-9. [TFLite 변환 및 추론](#tflite-변환-및-추론)
+8. [실험 결과](#실험-결과)
+9. [ONNX 변환 및 추론](#onnx-변환-및-추론)
+10. [TFLite 변환 및 추론](#tflite-변환-및-추론)
 
 ---
 
@@ -221,6 +222,148 @@ python inference.py \
 python summary.py --model vgg
 python summary.py --model inception
 ```
+
+---
+
+## 실험 결과
+
+
+### 포맷별 성능 요약
+
+| 모델 | PyTorch (ONNX) | TFLite FP32 | TFLite INT8 | FP32 크기 | INT8 크기 | 압축률 |
+|---|:---:|:---:|:---:|---:|---:|:---:|
+| VGG | 92.84% | 92.84% | 92.82% | 13.76 MB | 3.50 MB | 1/4 |
+| Inception | 94.24% | 94.24% | 94.22% | 1.80 MB | 0.49 MB | 1/4 |
+| TCN | 91.73% | 91.73% | 91.73% | 0.35 MB | 0.11 MB | 1/3 |
+
+
+---
+
+### 상세 결과
+
+#### VGG
+
+<details>
+<summary>PyTorch / ONNX / TFLite FP32 — Accuracy 0.9284</summary>
+
+```
+              precision    recall  f1-score   support
+
+     Class 0       0.98      0.99      0.98      2627
+     Class 1       0.86      0.99      0.92      1590
+     Class 2       0.00      0.00      0.00        86
+     Class 3       0.00      0.00      0.00       175
+     Class 4       0.00      0.00      0.00        22
+
+    accuracy                           0.93      4500
+   macro avg       0.37      0.40      0.38      4500
+weighted avg       0.87      0.93      0.90      4500
+```
+
+</details>
+
+<details>
+<summary>TFLite INT8 (3.50 MB) — Accuracy 0.9282</summary>
+
+```
+              precision    recall  f1-score   support
+
+     Class 0       0.98      0.99      0.98      2627
+     Class 1       0.86      0.99      0.92      1590
+     Class 2       0.00      0.00      0.00        86
+     Class 3       0.00      0.00      0.00       175
+     Class 4       0.00      0.00      0.00        22
+
+    accuracy                           0.93      4500
+   macro avg       0.37      0.40      0.38      4500
+weighted avg       0.87      0.93      0.90      4500
+```
+
+</details>
+
+---
+
+#### Inception
+
+<details>
+<summary>PyTorch / ONNX / TFLite FP32 — Accuracy 0.9424</summary>
+
+```
+              precision    recall  f1-score   support
+
+     Class 0       0.98      1.00      0.99      2627
+     Class 1       0.92      0.97      0.94      1590
+     Class 2       0.71      0.23      0.35        86
+     Class 3       0.54      0.41      0.46       175
+     Class 4       0.00      0.00      0.00        22
+
+    accuracy                           0.94      4500
+   macro avg       0.63      0.52      0.55      4500
+weighted avg       0.93      0.94      0.93      4500
+```
+
+</details>
+
+<details>
+<summary>TFLite INT8 (0.49 MB) — Accuracy 0.9422</summary>
+
+```
+              precision    recall  f1-score   support
+
+     Class 0       0.98      1.00      0.99      2627
+     Class 1       0.92      0.96      0.94      1590
+     Class 2       0.71      0.23      0.35        86
+     Class 3       0.53      0.41      0.46       175
+     Class 4       0.00      0.00      0.00        22
+
+    accuracy                           0.94      4500
+   macro avg       0.63      0.52      0.55      4500
+weighted avg       0.93      0.94      0.93      4500
+```
+
+</details>
+
+---
+
+#### TCN
+
+<details>
+<summary>PyTorch / ONNX / TFLite FP32 — Accuracy 0.9173</summary>
+
+```
+              precision    recall  f1-score   support
+
+     Class 0       0.93      1.00      0.96      2627
+     Class 1       0.89      0.95      0.92      1590
+     Class 2       0.00      0.00      0.00        86
+     Class 3       0.00      0.00      0.00       175
+     Class 4       0.00      0.00      0.00        22
+
+    accuracy                           0.92      4500
+   macro avg       0.36      0.39      0.38      4500
+weighted avg       0.86      0.92      0.89      4500
+```
+
+</details>
+
+<details>
+<summary>TFLite INT8 (0.11 MB) — Accuracy 0.9173</summary>
+
+```
+              precision    recall  f1-score   support
+
+     Class 0       0.93      1.00      0.96      2627
+     Class 1       0.89      0.95      0.92      1590
+     Class 2       0.00      0.00      0.00        86
+     Class 3       0.00      0.00      0.00       175
+     Class 4       0.00      0.00      0.00        22
+
+    accuracy                           0.92      4500
+   macro avg       0.36      0.39      0.38      4500
+weighted avg       0.86      0.92      0.89      4500
+```
+
+</details>
 
 ---
 
